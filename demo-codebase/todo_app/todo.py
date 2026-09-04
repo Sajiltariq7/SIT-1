@@ -52,10 +52,10 @@ class TodoList:
     def high_priority_pending(self) -> list[Task]:
         """Return all pending (not done) tasks with 'high' priority.
 
-        NOTE: There is a known bug in this function. Use it as the
-        "Debug" exercise: give a coding agent the failing test in
-        tests/test_todo.py and ask it to find and fix the root cause.
+        A task is considered pending when it has not been completed yet
+        (``done`` is False). Completed high-priority tasks are excluded.
+        The returned list preserves insertion order.
         """
-        # BUG: this checks task.done instead of `not task.done`, so it
-        # returns completed high-priority tasks instead of pending ones.
+        # Only include tasks that (1) are marked 'high' priority and
+        # (2) are still pending (not done).
         return [t for t in self.tasks.values() if t.priority == "high" and not t.done]
