@@ -24,13 +24,17 @@ Cline corectly identified the project as a todo list app built, correctly mapped
 Agents: Yes, tested and followed. When asked to read and follow it. Cline obeyed and respected all the instructions, constraint by not changing existing file. Confirmed its own explanation after building main_interactive.py.
 
 ## 6. Practical task performed
-CHANGE TASK: Prompted to add a new file main_interactive.py to the project....
-DEBUG TASK: Run the test and find out the root cause of bug in test_high_priority_pending is failing then fixing it
-TEST VERIFICATION:Cline ran pytest itself and reported all test passing  
+CHANGE TASK: Prompted to add a new file main_interactive.py to the project....Cline proposed and created a 44-line interactive menu app .Evidence:
+  evidence/Cline-3.PNG (proposed diff), evidence/Cline-5.PNG (me running
+  it myself, adding/completing/viewing a task).
+DEBUG TASK: Asked Cline to explain the codebase and check for issues. It independently noticed that a code comment describing a "known bug" in high_priority_pending() no longer matched the actual code — the bug had already been fixed in an earlier session, but the comment was stale and still described the old broken behavior. Cline confirmed via pytest that all 6 tests currently passed, then asked whether to update the comment. I approved the cleanup. Evidence: evidence/Cline-1.PNG (it flagging the mismatch), evidence/Cline-2.PNG (the diff fixing the stale comment, plus
+6 passed).
+TEST VERIFICATION: Cline ran pytest itself and reported all test passing. I independently ran pytest myself afterward and confirmed the same result.  Evidence: evidence/Cline-4.PNG (duplicate folder cleanup + re-
+  verification), evidence/Cline-6.PNG (my own final independent test run).
 
 
 ## 7. Permissions & approval workflow
-Cline always showed a proposed a plan before making any file change and waited for me to approve before responding.
+Cline always showed a proposed plan or diff before making any file change, with explicit Save/Reject buttons, and waited for my approval before applying anything. It also had an "Auto-approve" toggle (visible as "Auto-approve: Read, Commands" in my screenshots) controlling which actions it could take automatically — but file edits still required my manual click-through in every case I tested. When it wanted to delete a stray duplicate folder, it explained exactly what it would remove before asking permission (evidence/Cline-4.PNG).
 
 ## 8. What worked well / what failed / what you had to fix manually
 It correctly diagnosed and fixed a logical bug with an accurate explanation, caught an unrelevant issue on its own and asked before making any change.
@@ -46,3 +50,7 @@ small feature additions, where seeing a diff and approving each change
 before it happens matters. It felt well-suited for a beginner because
 everything stays visible inside VS Code rather than a separate terminal
 window.
+
+
+
+What I personally learned testing Cline: it's genuinely useful for reviewing changes before they happen since every edit shows a diff first, but I had to stay alert about which folder it was actually working in, since it doesn't automatically sync with my separate Git repo folder.
