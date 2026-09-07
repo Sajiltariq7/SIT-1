@@ -52,3 +52,23 @@ def test_high_priority_pending():
     pending_titles = [t.title for t in pending_high]
 
     assert pending_titles == ["Finish report"]
+
+
+def test_rename_task():
+    todo = TodoList()
+    task_id = todo.add_task("Write report")
+    todo.rename_task(task_id, "Write final report")
+    assert todo.tasks[task_id].title == "Write final report"
+
+
+def test_rename_task_empty_title_raises():
+    todo = TodoList()
+    task_id = todo.add_task("Write report")
+    with pytest.raises(TodoError):
+        todo.rename_task(task_id, "   ")
+
+
+def test_rename_task_not_found_raises():
+    todo = TodoList()
+    with pytest.raises(TodoError):
+        todo.rename_task(99, "New title")

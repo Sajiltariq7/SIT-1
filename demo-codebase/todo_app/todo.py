@@ -45,6 +45,14 @@ class TodoList:
             raise TodoError(f"Task {task_id} not found")
         del self.tasks[task_id]
 
+    def rename_task(self, task_id: int, new_title: str) -> None:
+        """Rename a task."""
+        if not new_title.strip():
+            raise TodoError("Task title cannot be empty")
+        if task_id not in self.tasks:
+            raise TodoError(f"Task {task_id} not found")
+        self.tasks[task_id].title = new_title
+
     def pending_count(self) -> int:
         """Return the number of tasks that are NOT done."""
         return sum(1 for task in self.tasks.values() if not task.done)
