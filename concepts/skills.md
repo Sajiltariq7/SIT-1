@@ -1,19 +1,7 @@
 # Skills
 
-Answer each in your own words (2-4 sentences each), grounded in what you
-actually observed while testing the tools:
 
-1. **What is a "skill" in the context of an agentic coding tool?**
-   (Think: a packaged set of instructions/best-practices the agent can load
-   for a specific kind of task — e.g. writing a PDF, following a house code
-   style. How is this different from just prompting the agent directly?)
-
-2. **How does a tool discover or load a skill?**
-   (Is it a file it scans on startup? A folder convention? A marketplace/registry?
-   Cite which tool(s) you actually saw this in, if any.)
-
-3. **When is a reusable skill actually useful vs. unnecessary overhead?**
-   (Give a concrete example from your own testing, or a plausible team scenario.)
-
-4. **Which of your tested tools supported skills, and did you test it?**
-   (Be explicit: supported-and-tested / supported-but-untested / unsupported.)
+Skills: Saved set of instructions or rules, that teaches an AI Agent how to do a specific job. Prevent retyping same rules repeatedly, a skill stays active in the background ensuring that agent follows project-specicifications automatically.
+WORKING (How does a tool discover or load a skill): Tool reads setup files and folders in project directory when you open it. Agent automatically scans these configuration files when it starts up so it knows what rules to follow.
+REUSABLE SKILLS (When is a reusable skill actually useful vs. unnecessary overhead): A reusable skill is extremely useful when working on team projects that need strict, repetitive formatting rules agent needs to follow. On the other hand it is a waste of time for quick simple tasks where it is faster to tell the AI what to do.
+TOOL: Cline supported and tested. Cline lets you use custom rules and settings to control how the AI helps the code.
