@@ -18,6 +18,4 @@ All tests must pass before a change is considered complete.
   on these signatures staying the same.
 
 ---
-*This file exists so you can test whether each agentic coding tool actually
-reads and follows project-level instructions. After giving an agent a task,
-check whether it respected the rules above — note this in your tool README.*
+

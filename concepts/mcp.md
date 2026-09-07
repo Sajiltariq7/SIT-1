@@ -1,22 +1,6 @@
 # MCP (Model Context Protocol)
 
-Answer each in your own words (2-4 sentences each):
-
-1. **What problem does MCP solve?**
-   (Think: before MCP, every tool had to build custom integrations to every
-   data source/API. What does MCP standardize?)
-
-2. **How does an MCP server expose tools/context to an agent?**
-   (In plain terms: a small server process that the agent can call, which
-   exposes a defined set of "tools" — e.g. read a file, query a database,
-   search the web — that the agent can invoke during a conversation.)
-
-3. **What are the security implications of connecting an agent to an MCP
-   server?**
-   (Consider: the server can see everything you send it; a malicious or
-   compromised server could exfiltrate data; the agent may execute actions
-   the server "suggests." Why does permission/approval matter here specifically?)
-
-4. **Did you test an MCP server yourself? What did you connect, what tool
-   did it expose, and what would you check before trusting one in a real
-   team environment?**
+MCP:  Stands for Model Context Protocol, which acts as a universal plug that lets AI models to connect to external tools like apps, files, databases easily, removing the need to build a unique connection for every single service.
+How It Works: An MCP server acts as a bridge between AI Assistants and external resources. It provides a specific set of tools that AI can ask to use, such as searching data or reading files, and sends the result back.
+Security: Connecting to an MCP server means sharing data, security prompts are built-in. These require a human user to review and approve actions before AI executes them.
+Safe Usage: Its safe to Always authenticate and verify who created MCP server before trusting it with work.
