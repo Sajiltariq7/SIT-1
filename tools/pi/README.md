@@ -1,59 +1,63 @@
 Pi Coding Agent
-
 1. What is it?
-Pi Coding Agent is a command-line (CLI) AI assistant that runs in your terminal or inside VS Code. It reads files, writes code, and runs terminal commands for you.
+
+Pi is a terminal-based coding agent — you run it as a command-line tool (typed pi in Command Prompt), similar in style to OpenCode, rather than a VS Code extension or desktop app.
 
 2. Is it free? What did you actually use?
-- Tool Core: Yes, the tool itself is 100% free and open-source.
-- Model Usage: Direct login requires paid plans, but I used it completely free by connecting an OpenRouter free API key (`openrouter/free`). I also tested a local offline model using Ollama (`llama3.2`).
+
+Pi itself is free and open-source (installed via npm). However, unlike OpenCode, Pi has no built-in free model — its /login command only offers paid subscription options (Claude Pro/Max, ChatGPT Plus/Pro, GitHub Copilot). To use it for free, I had to manually configure a custom provider via a models.json config file. I first connected it to a fully local, offline model (Ollama's llama3.2, ~2GB, no account needed), then later upgraded to a free-tier model via OpenRouter (signed up using a work email, since I preferred not to use a personal account) after finding llama3.2's responses unreliable.
 
 3. Setup — reproducible commands
-```bash
-    1. Install Pi globally using npm
-   npm install -g @earendil-works/pi-coding-agent
-    2. Start Pi in your project folder
-   pi
-    3. Add your free OpenRouter key and select the free model inside Pi
-   /config set openrouter.apiKey YOUR_OPENROUTER_KEY
-   /model openrouter/meta-llama/llama-3.3-70b-instruct:free
+1. npm install -g @mariozechner/pi-coding-agent
+2. pi --version   (confirm install)
+3. Tried /login inside Pi — only paid subscriptions offered, no free option
+4. Installed Ollama (ollama.com), ran: ollama pull llama3.2
+5. Created ~/.pi/agent/models.json manually with a custom "ollama"
+   provider entry pointing to http://localhost:11434/v1
+6. cd into project folder, ran: pi — confirmed "Model: llama3.2"
+7. Later: signed up at openrouter.ai, got a free API key
+8. In Pi: /login → OpenRouter → pasted the key
+9. /model → selected a free OpenRouter model
+
+Prerequisites: Node.js, and either Ollama installed locally OR a free OpenRouter account.
+
+Real setup friction: no free option was available through Pi's own /login flow — required reading Pi's own documentation files directly to discover the custom models.json provider system before a genuinely free setup was possible.
 
 4. Codebase understanding
-Prompt Used: "Inspect this repository. Summarize its purpose, map important files, identify entry points, and explain the main data/control flow."
-Local Model (llama3.2) Output: It created a markdown file todo_app.md on its own (Pi-1.PNG) and gave a basic summary, but missed some file details.
-OpenRouter Free Model Output: It provided a structured table listing every file (todo_app/todo.py, main_interactive.py, tests/test_todo.py, AGENTS.md) and drew an ASCII diagram showing how data flows from the CLI to TodoList (Pi-6.PNG, Pi-7.PNG).
-Context Gathering: Pi searched files directly in the terminal using cat and grep commands (Pi-4.PNG, Pi-5.PNG). When absolute path reads failed because of spaces in the folder name (SAJIL TARQ), Pi automatically ran find . -name "todo.py" to locate the file (Pi-7.PNG).
+
+With the local llama3.2 model: the response was vague and incomplete — it only mentioned todo_app/todo.py as an important file, missing cli.py, main_interactive.py, tests/, and AGENTS.md entirely, and described the app in generic terms rather than specifics. In a separate response, it directly contradicted itself: it displayed the real content of README.md, then in the same reply claimed that file was empty.
+
+With the OpenRouter model: results were significantly better — it correctly mapped every relevant file (todo.py, cli.py, main_interactive.py, tests/test_todo.py, AGENTS.md), hit a real path bug (doubled drive letter when using its read tool) but self-corrected by switching to cd + cat commands, and gave an accurate description of the data flow. However, it still made one inaccurate claim, describing "a bug in high_priority_pending" despite having just displayed the already-fixed code — the same category of stale claim seen in OpenCode and Continue.
+
+Evidence: evidence/Pi-llama-understand.PNG (vague version), evidence/Pi-openrouter-understand-1.PNG through -3.PNG (accurate version with the stale bug claim).
 
 5. Project instructions, skills, plugins, MCP support
-AGENTS.md Support: Yes (Supported and Tested). Pi read AGENTS.md (Pi-2.PNG) and confirmed constraints: Python 3.11+ style, type hints, pytest only, and keeping existing function signatures untouched.
-Skills: Supported, but not tested.
-Plugins/Extensions: Supported, but not tested.
-MCP: Supported, but not tested on Pi (tested on OpenCode instead).
-
+AGENTS.md: Yes, tested and followed — notably, Pi auto-loaded this file on startup without being asked at all (shown as "[Context] AGENTS.md"), a real difference from Cline/OpenCode/Continue, which all needed to be explicitly told to check it. When asked directly, it correctly summarized all 4 real constraints (Python 3.11+/PEP 8, type hints, no dependencies beyond pytest, protected method signatures).
+Skills: Not tested — no distinct skills marketplace observed.
+Plugins/extensions: Not tested in this session.
+MCP: Not tested with Pi specifically (tested separately with OpenCode — see concepts/mcp.md).
 6. Practical task performed
-Change task:
-Prompt: "Add a lightweight method count_all(self) -> int to TodoList in todo.py that returns the total count of all the tasks (both pending and completed). Do not overwrite other methods."
-Diff Produced: Added def count_all(self) -> int: returning len(self.tasks) right below pending_count (Pi-8.PNG).
-Evidence Path: evidence/Pi-7.PNG, evidence/Pi-8.PNG
-Debug task:
-Prompt: "Run the tests and tell me if high_priority_pending currently has a bug or not."
-Root cause found: Pi inspected todo_app/todo.py line 61-65 using grep and correctly stated the bug mentioned in test comments was already fixed (Pi-5.PNG).
-Evidence Path: evidence/Pi-5.PNG
-Test verification:
-Command run: python -m pytest -v (Pi tried pytest -v first, got command not found, and auto-switched to python -m pytest -v) (Pi-8.PNG).
-Output: 9 passed in 0.06s (100% pass) (Pi-8.PNG).
-Evidence Path: evidence/Pi-8.PNG
+
+Change task (llama3.2): Asked it to add a mark_all_complete() method. It produced a malformed tool call, then on retry proposed an edit that appeared to attempt overwriting the entire file's content with just the letter "X" (oldText: "", newText: "X", range covering the whole file). I did NOT approve this — flagged as a serious reliability/safety concern likely caused by the small local model's limited tool-calling ability. Evidence: evidence/Pi-destructive-edit.PNG.
+
+Change task retry (OpenRouter, simpler request): Asked it to add a one-line count_all() method. It checked the actual current code first (grep) and discovered count_all() already existed from an earlier session, correctly recognizing this instead of creating a duplicate — careful, non-destructive behavior, a clear improvement over the earlier incident. Evidence: evidence/Pi-count-all-check.PNG.
+
+Debug-related finding: When simply asked to explain the codebase, Pi claimed a bug existed that had already been fixed. When explicitly asked "Run the tests and tell me if high_priority_pending currently has a bug or not," it actually ran pytest and read the real code, then gave an accurate answer: "No bug currently... It excludes completed high-priority tasks and includes only pending ones." This is a valuable, nuanced finding — Pi was more accurate when explicitly asked to verify than when just asked to explain. Evidence: evidence/Pi-bug-verify.PNG.
+
+Test verification: Ran python -m pytest tests -v myself independently — 9 passed, matching what Pi reported. Evidence: evidence/Pi-verify.PNG.
 
 7. Permissions & approval workflow
-Pi executed terminal commands and modified files directly.
-When using the local model, a malformed edit tool call failed with Validation failed for tool "edit" (Pi-3.PNG), which Pi tried to auto-fix.
-When using OpenRouter, file edits (edit ./todo_app/todo.py) were applied directly without an interactive pop-up approval screen (Pi-8.PNG).
+
+This varied significantly by situation. Early in testing, Pi wrote a new file (todo_app.md) directly to disk with NO approval prompt at all — a real difference from Cline and OpenCode, which always required explicit approval before any file change. Separately, when it proposed the potentially destructive "X" edit, I was able to see and reject the proposed change before it was applied — so in that specific case, there was a visible checkpoint I could act on, even though the earlier file write had none. This inconsistency (approval sometimes shown, sometimes not) is itself worth noting as a real observation.
 
 8. What worked well / what failed / what you had to fix manually
-What Worked Well: Great self-correction. When path reads failed due to directory spaces (SAJIL TARQ), it ran find on its own (Pi-7.PNG). When pytest -v gave command not found (exit code 127), it automatically retried with python -m pytest -v (Pi-8.PNG).
-What Failed: Local llama3.2 generated broken tool call parameters (oldText: "", newText: "X") (Pi-3.PNG).
-What Was Fixed Manually: Switched the model inside Pi to OpenRouter free tier (openrouter/free) to get clean code edits and accurate repo maps (Pi-6.PNG).
+
+Worked well: Auto-loading AGENTS.md on startup without being asked. Self-correcting through a real path bug (doubled drive letter) by switching command approaches. With a better model, carefully checking existing code before adding something that might already exist. When explicitly asked to verify (not just explain), it gave an accurate answer about the bug status.
+
+Failed: With the local model, gave an incomplete/vague codebase summary, once directly contradicted itself, wrote a file with no approval prompt, and proposed what looked like a destructive whole-file overwrite that had to be rejected. Made an inaccurate claim about a fixed bug when simply asked to explain (before being asked to verify).
+
+Had to fix manually: No free model was available through Pi's built-in login — had to read Pi's own documentation files directly and manually create a models.json config file to connect a free local model, then later switch again to get a more reliable free cloud model via OpenRouter.
 
 9. Best use cases, limitations, and recommendation
-Best Use Cases: Best for developers who like working in terminal/TUI interfaces and want fast autonomous command execution.
-Limitations: Free local models struggle with tool-calling format. Needs a strong cloud model (like OpenRouter free 70B models) to work reliably.
-Recommendation: Recommended for terminal users, as long as it is paired with OpenRouter free models rather than small local LLMs.
+
+Pi's actual capability seemed to depend heavily on which model was connected to it — the free local model (llama3.2) was noticeably less reliable and even risked a destructive action, while the free OpenRouter model performed comparably to OpenCode and Continue. Given the extra setup effort required just to get a genuinely free option working, and the inconsistent approval behavior observed, I would recommend Pi mainly for users comfortable with manual configuration and who pair it with a capable model — and would suggest always double-checking any proposed edit carefully, given the destructive edit attempt observed here with a weaker model.
