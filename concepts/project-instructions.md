@@ -1,21 +1,5 @@
-# Project Instructions (AGENTS.md and equivalents)
-
-Answer each in your own words (2-4 sentences each):
-
-1. **What is a project-instruction file (e.g. `AGENTS.md`, `.cursorrules`,
-   `CLAUDE.md`) meant to do?**
-   (Think: it gives the agent persistent context — coding style, test
-   commands, constraints — without you repeating it in every prompt.)
-
-2. **Did the tools you tested actually read it automatically, or did you
-   have to point them at it manually?**
-   (Report per-tool — this differs a lot in practice. Cite what you observed
-   in `demo-codebase/AGENTS.md`.)
-
-3. **Give one concrete example where a tool followed (or ignored) a rule
-   from `AGENTS.md` during your testing.**
-   (E.g. did it keep the public method signatures unchanged as instructed?)
-
-4. **Why does this matter for a real engineering team?**
-   (Think: consistency across many contributors/agents, reducing repeated
-   prompting, codifying tribal knowledge.)
+A project-instructions file like AGENTS.md gives an AI agent persistent rules (coding style, test commands, constraints) without repeating them in every single prompt.
+I tested this across all four tools (Cline, OpenCode, Pi, Continue) using the same AGENTS.md file, and all four correctly followed it when asked — respecting the same four real rules (Python 3.11+/PEP 8 style, required type hints, no extra dependencies beyond pytest, and not changing existing method signatures).
+Pi Coding Agent stood out from the others — it automatically loaded AGENTS.md on startup without being asked at all, while the other three needed to be explicitly told to check it.
+One concrete example: when I asked each tool to add a new feature, all of them kept the existing method signatures unchanged, exactly as the instructions required.
+This matters for real teams because it means coding standards and constraints can be set once, in one file, and followed consistently across different AI tools — instead of having to repeat the same instructions to every tool, every time.
