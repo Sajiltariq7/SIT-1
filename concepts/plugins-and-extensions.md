@@ -1,19 +1,5 @@
-# Plugins & Extensions
-
-Answer each in your own words (2-4 sentences each):
-
-1. **What does a plugin/extension actually extend — the editor, or the agent
-   itself?** (e.g. Cline is itself a VS Code extension; can it, in turn, have
-   plugins? Distinguish "the agent is an extension" from "the agent supports
-   extensions.")
-
-2. **How do plugins/extensions differ from skills?**
-   (Hint: skills are usually just instructions/context; plugins/extensions
-   often add new *capabilities* — new tools, new UI, new commands. Give a
-   concrete contrast using something you tested.)
-
-3. **What's an example of a plugin/extension you saw or tried, and what did
-   it actually add?**
-
-4. **What risk does installing a third-party plugin/extension carry?**
-   (Think: code execution, access to your files/terminal, supply-chain risk.)
+A plugin or extension usually adds a brand new capability to an editor or an AI agent, not just background instructions — that's the main difference from a "skill," which is mostly just context/guidance.
+Cline and Continue are good real examples: they are themselves VS Code extensions, adding an entire AI coding agent into the editor.
+None of the four tools I tested (Cline, OpenCode, Pi, Continue) showed a separate "install a plugin inside the agent" system — the tool itself being installed as an extension was the closest thing to this I saw.
+Installing any third-party plugin or extension carries real risk, since it can run code and access files with the same permissions as the user who installed it — the same risk idea I already documented for MCP servers.
+I did not personally install or test a plugin/extension beyond the core tools themselves during this assignment.
